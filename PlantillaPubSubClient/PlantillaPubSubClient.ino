@@ -62,21 +62,24 @@ void subscribeToTopics() {
 //***************DEFINICIÓN DE VARIABLES GLOBALES******************
 
 int Capacitivo = A0;
-int TRIG = D4; 
-int ECHO = D3;
+int TRIG = D1; 
+int ECHO = D0;
+int PIR = D2;
 long t = 0; // Siempre que sea con tiempo, se usa long
 float v = 0.000340; // velocidad en microsegundos
 float d = 0;
+float valorCapacitivo;
 
 unsigned long daytime;
 unsigned long readTime;
-const unsigned long halfHour = 1800000;
+const unsigned long halfHour = 30000;
 const unsigned long halfDay = 43200000;
 
 void setup() {
   //*********Sección para inicializar sensores
   pinMode(TRIG, OUTPUT);
   pinMode(ECHO, INPUT);
+  pinMode(PIR, INPUT);
   pinMode(Capacitivo, INPUT);
   //*********Inicializar monitor serial***********
   Serial.begin(115200);
@@ -143,9 +146,9 @@ void loop() {
       d = (v*t/2); // Distancia entre 2 por la ida y vuelta
 
       if(d >= 0.13){
-        publishToTopic("/monitor/nivelBomba", "Rellene el tanque");
+        publishToTopic("/monitor/nivelBomba", "Rellene el tanque de agua.");
       }else{
-        publishToTopic("/monitor/nivelBomba", "No es necesario rellenar aun el tanque");
+        publishToTopic("/monitor/nivelBomba", "Aun hay agua suficiente.");
       } 
 
       readTime = millis();
