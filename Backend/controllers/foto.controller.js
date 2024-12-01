@@ -23,6 +23,16 @@ controller.save = async (req, res, next)=>{
     }
 }
 
+controller.findLatest = async (req, res, next) => {
+    try {
+       const foto = await Foto.findOne().sort({ createdAt: -1 });
+       return res.status(200).json(foto);
+    } catch (error) {
+        next(error);
+    }
+}
+
+/*
 controller.findAll = async (req, res, next) => {
     try {
        const foto = await Foto.find();
@@ -31,5 +41,6 @@ controller.findAll = async (req, res, next) => {
         next(error);
     }
 }
+*/
 
 module.exports = controller;

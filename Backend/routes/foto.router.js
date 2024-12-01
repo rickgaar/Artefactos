@@ -3,7 +3,7 @@ const router = express.Router();
 
 const fotoController = require("../controllers/foto.controller");
  
-router.get("/", fotoController.findAll);
+router.get("/", fotoController.findLatest);
 
 router.post("/", fotoController.save);
 
