@@ -2,6 +2,8 @@ import { useMqtt } from "../hooks/UseMqtt";
 import DashboardElement from "../components/DashboardElement";
 import DashboardForm from "../components/DashboardPublishForm";
 import { useEffect, useState } from "react";
+let cont = 0;
+let cont2 = 0;
 
 function Dashboard() {
   // Obtener los mensajes de los topics suscritos
@@ -17,13 +19,22 @@ function Dashboard() {
   const movementTopic = "/monitor/movimiento";
   const comidaTopic = "/monitor/comida";
   const baseUrl = "http://localhost:3500/mascotas/comida/";
-
+  
   useEffect(() => {    
     //console.log(lastMessages);
-    
-    if(lastMessages && messages[waterLevelTopic] && lastMessages.nivelAgua != messages[waterLevelTopic]){
-      publish(waterLevelTopic, messages[waterLevelTopic]);
-      console.log(`Mensaje publicado en /monitor/nivelAgua: ${messages[waterLevelTopic]}`);
+    if(lastMessages && messages[waterLevelTopic]){
+      if(messages[waterLevelTopic] == "1024"){
+        if(cont<=10){
+          console.log(`Mensaje publicado en /monitor/nivelAgua: ${messages[waterLevelTopic]}`);
+          cont++
+          publish(waterLevelTopic, messages[waterLevelTopic]);
+        }
+        
+      }else{
+        cont=0
+        publish(waterLevelTopic, messages[waterLevelTopic]);
+      }
+      
       //Se actualiza el ultimo mensaje recibido
       setLastMessages({
         ...lastMessages,
@@ -32,10 +43,17 @@ function Dashboard() {
 
     }
 
-    if(lastMessages && messages[movementTopic] && lastMessages.movimiento != messages[movementTopic]){
-      publish(movementTopic, messages[movementTopic]);
-      console.log(`Mensaje publicado en /monitor/movimiento: ${messages[movementTopic]}`);
-      //Se actualiza el ultimo mensaje recibido
+    if(lastMessages && messages[movementTopic]){
+      if(messages[movementTopic] == "1023"){
+        if(cont2<=10){
+          console.log(`Mensaje publicado en /monitor/movimiento: ${messages[movementTopic]}`);
+          cont2++
+          publish(movementTopic, messages[movementTopic]);
+        }
+      }else{
+        cont2 = 0;
+      }
+
       setLastMessages({
         ...lastMessages,
         movimiento: messages[movementTopic]

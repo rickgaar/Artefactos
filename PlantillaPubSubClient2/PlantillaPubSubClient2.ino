@@ -72,8 +72,11 @@ float valorCapacitivo;
 
 unsigned long daytime;
 unsigned long readTime;
+unsigned long readWaterLevel;
 unsigned long movementTime;
+unsigned long noMovementTime;
 const unsigned long halfHour = 30000;
+unsigned long spareMovement = 60000;
 const unsigned long halfDay = 43200000;
 
 void setup() {
@@ -118,6 +121,7 @@ void setup() {
 
   daytime = millis();
   readTime = millis();
+  readWaterLevel = millis();
   movementTime = millis() - 60000;
 }
 
@@ -156,15 +160,23 @@ void loop() {
       readTime = millis();
     }
 
-    float valorCapacitivo = analogRead(Capacitivo);
+    if(millis() - readWaterLevel >= 2000){
+      float valorCapacitivo = analogRead(Capacitivo);
 
-    char *intString = intToChar(valorCapacitivo);
-    publishToTopic("/monitor/nivelAgua", intString);
-    free(intString); //Este paso es importantísimo para liberar la memoria reservada por el buffer, caso contrarió pueden haber problemas fuga, desbordamiento o fragmentación de memoria
+      char *intString = intToChar(valorCapacitivo);
+      publishToTopic("/monitor/nivelAgua", intString);
+      free(intString); //Este paso es importantísimo para liberar la memoria reservada por el buffer, caso contrarió pueden haber problemas fuga, desbordamiento o fragmentación de memoria
+      readWaterLevel = millis();
+    }
 
-    if(millis() - movementTime >= 60000){
+
+    if(millis() - movementTime >= spareMovement){
       int valorPIR = analogRead(PIR);
       if(valorPIR == 1023){
+        spareMovement = 60000;
+        movementTime = millis();
+      }else{
+        spareMovement = 2000;
         movementTime = millis();
       }
       char *intString2 = intToChar(valorPIR);

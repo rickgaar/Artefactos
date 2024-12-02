@@ -42,11 +42,11 @@ int IN3 = D2;
 int IN4 = D3;
 int ENB = D4;
 float bascula = 0;
-const float minimoBascula = 18.5;
-const float maximoBascula = 20;
+const float minimoBascula = 25;
+const float maximoBascula = 30;
 float consumedFood = 0;
 float initialFood = 0;
-float _capacitivo=0;
+float _capacitivo=1024;
 bool motorStarted = false;
 bool derGiro = false;
 bool pumpStarted = false;
@@ -80,10 +80,10 @@ void mqttCallback(char *topicChar, byte *payload, unsigned int length) {
 
   //**********Definir manejo de mensajes entrantes por topic*******
   //Ej:
-  if (topic == "/monitor/nivelAgua") {
+  if (topic == "/monitor/nivelAgua" && capacitivo != "") {
     Serial.println(capacitivo);
     _capacitivo=capacitivo.toFloat();
-    if(capacitivo.toFloat() <= 15){
+    if(capacitivo.toFloat() <= 1000){
       digitalWrite(IN1, LOW);
       digitalWrite(IN2, HIGH);
       lowWater = true;
@@ -133,8 +133,6 @@ void setup() {
   Serial.print("Connected to WiFi Access Point, Got an IP address: ");
   Serial.println(WiFi.localIP());
   // Configurar la reconexión automática ante perdida de señal
-  WiFi.setAutoReconnect(true);
-  WiFi.persistent(true);// Configurar la reconexión automática ante perdida de señal
 
   //*********Configurar conexión MQTT*************
   mqttClient.setServer(server, port);
@@ -302,32 +300,37 @@ void motorreductor(float bascula){
     halfHour = 100;
   }
 
-  if(!derGiro && millis() - t <= 70.25){
     digitalWrite(IN3, HIGH);
     digitalWrite(IN4, LOW);
     analogWrite(ENB, 255);
-  }else if(!derGiro && millis() - t <= 5053.25){
+    delay(74.5);
     digitalWrite(IN3, LOW);
     digitalWrite(IN4, LOW);
     derGiro=true;
     t=0;
-  } 
-  if (bascula>=maximoBascula){
-    if(!t){
-      t=millis();
-    }
-    if(millis() - t <= 70.25){
-      digitalWrite(IN4, HIGH);
+    digitalWrite(IN4, HIGH);
       digitalWrite(IN3, LOW);
       analogWrite(ENB, 255);
-    }else if(millis() - t <= 5053.25){
+      delay(74.5);
       digitalWrite(IN3, LOW);
       digitalWrite(IN4, LOW);
       derGiro = false;
+  
+  if (bascula>=maximoBascula){
+    if(!t){
+      t=millis();
+      digitalWrite(IN4, HIGH);
+      digitalWrite(IN3, LOW);
+      analogWrite(ENB, 255);
+      delay(74.5);
+      digitalWrite(IN3, LOW);
+      digitalWrite(IN4, LOW);
+      derGiro = false;    
       motorStarted = false;
       halfHour = 2000;
-    }
+    
   }
+}
 }
 
 void bombaAgua(){
