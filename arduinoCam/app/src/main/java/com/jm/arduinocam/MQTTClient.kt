@@ -80,8 +80,12 @@ class MQTTClient(context: Context?,
 
                         message_content= String(message.payload)
                     }
-                    if(message_content=="1023"){
+                    if(message_content=="1023" && Data.cont){
+                        println(Data.cont)
+                        println(message_content)
+
                         Data.isPressed.value=true;
+                        Data.cont=false
 
                     }
                 }

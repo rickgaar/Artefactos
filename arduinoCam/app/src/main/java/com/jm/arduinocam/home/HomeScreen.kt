@@ -110,7 +110,6 @@ private fun takePicture(cameraController: LifecycleCameraController, executor: E
 @OptIn(ExperimentalEncodingApi::class)
 private fun uploadImage(file: File){
     val image = file.readBytes()
-    println(image)
     val _image = Base64.Default.encode(image)
     val viewModel=FotoViewModel()
     viewModel.addFoto(FotoApi(_image))

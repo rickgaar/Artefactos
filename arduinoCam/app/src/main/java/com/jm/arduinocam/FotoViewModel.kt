@@ -24,13 +24,16 @@ class FotoViewModel: ViewModel() {
                 val response = api.postFoto(foto)
 
                 Log.i("MainViewModel",response.toString())
+                Data.cont=true
             }catch (e:Exception){
                 when(e){
                     is retrofit2.HttpException -> {
                         e.message?.let { Log.i("MainViewmodel", it) }
+                        Data.cont=true
                     }
                     else -> {
                         Log.i("MainViewModel", e.toString())
+                        Data.cont=true
                     }
                 }
             }

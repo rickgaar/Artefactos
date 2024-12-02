@@ -5,5 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 class Data {
     companion object{
         val isPressed = mutableStateOf(false)
+        var cont =true;
     }
 }

@@ -25,7 +25,7 @@ controller.save = async (req, res, next)=>{
 
 controller.findLatest = async (req, res, next) => {
     try {
-       const foto = await Foto.findOne().sort({ createdAt: -1 });
+       const foto = await Foto.find().sort({ createdAt: -1 }).limit(1);
        return res.status(200).json(foto);
     } catch (error) {
         next(error);
